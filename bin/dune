@@ -1,0 +1,4 @@
+(executable
+ (public_name simpleMidiPublisher)
+ (name main)
+ (libraries simpleMidiPublisher runtime_events unix sexplib0 portmidi cmdliner logs lwt logs.lwt stdio str lwt.unix))
