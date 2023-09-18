@@ -11,7 +11,9 @@ let handle_message msg =
 let send_message server_socket msg =
   Unix.sleepf 0.2;
   print_endline ("Printing note " ^ msg);
-  let publishMsg = "publish 1 " ^ msg in
+  let status_byte = int_of_char (String.get msg 0) in
+  let channel =  status_byte land 0x0F in
+  let publishMsg = "publish " ^ string_of_int channel ^ " " ^ msg in
   Lwt_unix.sendto server_socket (Bytes.of_string publishMsg) 0 (String.length publishMsg) [] (ADDR_INET (listen_address, port))
   >>= fun _ -> Lwt.return_unit
 

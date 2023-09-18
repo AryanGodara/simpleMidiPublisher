@@ -11,7 +11,9 @@ let handle_message msg =
 let send_message server_socket msg =
   Unix.sleepf 0.2;
   print_endline ("Printing note " ^ msg);
-  let publishMsg = "publish 1 " ^ msg in
+  let status_byte = int_of_char (String.get msg 0) in
+  let channel =  status_byte land 0x0F in
+  let publishMsg = "publish " ^ string_of_int channel ^ " " ^ msg in
   Lwt_unix.sendto server_socket (Bytes.of_string publishMsg) 0 (String.length publishMsg) [] (ADDR_INET (listen_address, port))
   >>= fun _ -> Lwt.return_unit
 
@@ -23,13 +25,6 @@ let rec handle_request server_socket midiMessageList =
   send_messages server_socket midiMessageList
   >>= fun _ ->
   handle_request (Lwt.return server_socket) midiMessageList
-
-(* let rec handle_request server_socket midiMessageList =
-  server_socket >>= fun server_socket ->
-  let userMsg = read_line () in
-  send_messages server_socket midiMessageList
-  >>= fun _ ->
-  print_endline "Request sent"; *)
 
 let create_socket () : Lwt_unix.file_descr Lwt.t =
   print_endline "Creating socket";
